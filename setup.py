@@ -8,14 +8,14 @@ with open('requirements.txt') as open_file:
     install_requires = open_file.read()
 
 setuptools.setup(
-    name="my-python-package-template",
+    name="parsing-conferences",
     version="0.0.1",
     author="Zaccharie Ramzi",
     author_email="zaccharie.ramzi@gmail.com",
-    description="My Python package template.",
+    description="Parsing conferences paper automatically.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/zaccharieramzi/my-python-package-template",
+    url="https://github.com/zaccharieramzi/parsing-conferences",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
