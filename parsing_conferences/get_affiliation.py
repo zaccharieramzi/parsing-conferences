@@ -1,3 +1,6 @@
+import time
+from pathlib import Path
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -15,4 +18,12 @@ def get_affiliations(pdf_path):
     return institutions
 
 if __name__ == '__main__':
-    print(get_affiliations('../mendeley_papers/wang03b.pdf'))
+    mendeley_path = Path('../mendeley_papers')
+    papers = mendeley_path.glob('NeurIPS-2020*.pdf')
+    n_samples = 10
+    for paper in list(papers)[:10]:
+        start = time.time()
+        print(paper.stem, get_affiliations(paper))
+        end = time.time()
+        print(f'Took {end - start} seconds')
+        print('='*20)
