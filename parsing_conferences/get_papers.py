@@ -16,8 +16,7 @@ def is_li_article(li):
         abs_in_ref = False
     return length_correct and abs_in_ref
 
-if __name__ == '__main__':
-    start = time.time()
+def get_neurips_papers(year):
     response = requests.get(PROCEEDINGS['neurips'][2020])
     soup = BeautifulSoup(response.content)
     list_items = soup.find_all('li')
@@ -32,8 +31,6 @@ if __name__ == '__main__':
             raise ValueError()
         article_link = art_pdf_links[0]['content']
         pdf_response = requests.get(article_link)
-        with open('test.pdf', 'wb') as f:
+        with open('tmp.pdf', 'wb') as f:
             f.write(pdf_response.content)
-        break
-    end = time.time()
-    print(f'Listing and downloading 1 took {end - start}')
+        yield
