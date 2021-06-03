@@ -22,6 +22,7 @@ def get_neurips_papers(year):
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
     for article_item in articles_items:
+        article_title = article_item.contents[0].contents[0]
         article_link = article_item.contents[0].attrs['href']
         art_response = requests.get(PROCEEDINGS['neurips']['prefix'] + article_link)
         soup_art = BeautifulSoup(art_response.content)
@@ -33,4 +34,4 @@ def get_neurips_papers(year):
         pdf_response = requests.get(article_link)
         with open('tmp.pdf', 'wb') as f:
             f.write(pdf_response.content)
-        yield
+        yield article_title
