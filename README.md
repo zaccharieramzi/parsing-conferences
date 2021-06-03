@@ -1,6 +1,5 @@
-# My python package template
+# Parsing conferences
 
-[![Travis CIBuild Status](https://travis-ci.com/zaccharieramzi/my-python-package-template.svg?token=wHL4tmyGD3TP6bSo6Mdh&branch=master)](https://travis-ci.com/zaccharieramzi/my-python-package-template)
-![GitHub Workflow Build Status](https://github.com/zaccharieramzi/my-python-package-template/workflows/Continuous%20testing/badge.svg)
+![GitHub Workflow Build Status](https://github.com/zaccharieramzi/parsing-conferences/workflows/Continuous%20testing/badge.svg)
 
-With Readme, gitignore, travis, GitHub workflow, reqs and tree structure
+Trying to automatically parse conference papers, in order to perform meta-analysis.
