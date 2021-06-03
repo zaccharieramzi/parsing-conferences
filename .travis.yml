@@ -1,8 +1,0 @@
-language: python
-cache: pip
-install:
-  - pip install pytest==5.0.0
-  - pip install .
-
-script:
-  - pytest -s my_package/tests
