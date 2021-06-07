@@ -28,6 +28,9 @@ if __name__ == '__main__':
         if n_samples is not None and counter > n_samples:
             break
     df_affiliations_new = pd.DataFrame(affiliation_data)
-    df_affiliations = df_affiliations.append(df_affiliations_new)
+    if df_affiliations is not None:
+        df_affiliations = df_affiliations.append(df_affiliations_new)
+    else:
+        df_affiliations = df_affiliations_new
     df_affiliations.to_csv('affiliations_neurips_2020.csv')
     print(df_affiliations)
