@@ -34,4 +34,4 @@ def get_neurips_papers(year):
         pdf_response = requests.get(article_link)
         with open('tmp.pdf', 'wb') as f:
             f.write(pdf_response.content)
-        yield article_title
+        yield article_title, article_link
