@@ -11,11 +11,11 @@ if __name__ == '__main__':
     n_samples = 10
     counter = 0
     try:
-        df_affiliations = pd.read_csv('affiliations_neurips_2020.csv')
+        df_affiliations = pd.read_csv('affiliations_neurips_2020.csv', index_col=0)
     except FileNotFoundError:
         df_affiliations = None
     for neurips_art, art_link in tqdm(neurips_generator):
-        if df_affiliations is not None and art_link in df_affiliations['article_link']:
+        if df_affiliations is not None and art_link in df_affiliations['article_link'].unique():
             continue
         affiliations = get_affiliations('tmp.pdf')
         for affiliation in affiliations:
