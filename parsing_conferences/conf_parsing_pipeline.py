@@ -24,7 +24,7 @@ if __name__ == '__main__':
                 'paper_title': neurips_art
             })
         counter += 1
-        if counter > n_samples:
+        if n_samples is not None and counter > n_samples:
             break
     df_affiliations_new = pd.DataFrame(affiliation_data)
     df_affiliations = df_affiliations.append(df_affiliations_new)
