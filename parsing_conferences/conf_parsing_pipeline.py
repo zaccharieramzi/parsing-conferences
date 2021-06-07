@@ -1,4 +1,5 @@
 import pandas as pd
+from tqdm import tqdm
 
 from parsing_conferences.get_affiliation import get_affiliations
 from parsing_conferences.get_papers import get_neurips_papers
@@ -13,7 +14,7 @@ if __name__ == '__main__':
         df_affiliations = pd.read_csv('affiliations_neurips_2020.csv')
     except FileNotFoundError:
         df_affiliations = None
-    for neurips_art, art_link in neurips_generator:
+    for neurips_art, art_link in tqdm(neurips_generator):
         if df_affiliations is not None and art_link in df_affiliations['article_link']:
             continue
         affiliations = get_affiliations('tmp.pdf')
