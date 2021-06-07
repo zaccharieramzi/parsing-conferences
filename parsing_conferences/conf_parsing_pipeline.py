@@ -9,16 +9,24 @@ if __name__ == '__main__':
     affiliation_data = []
     n_samples = 10
     counter = 0
-    for neurips_art in neurips_generator:
+    try:
+        df_affiliations = pd.read_csv('affiliations_neurips_2020.csv')
+    except FileNotFoundError:
+        df_affiliations = None
+    for neurips_art, art_link in neurips_generator:
+        if df_affiliations is not None and art_link in df_affiliations['article_link']:
+            continue
         affiliations = get_affiliations('tmp.pdf')
         for affiliation in affiliations:
             affiliation_data.append({
                 'affiliation': affiliation,
+                'article_link': art_link,
                 'paper_title': neurips_art
             })
         counter += 1
         if counter > n_samples:
             break
-    df_affiliations = pd.DataFrame(affiliation_data)
+    df_affiliations_new = pd.DataFrame(affiliation_data)
+    df_affiliations = df_affiliations.append(df_affiliations_new)
     df_affiliations.to_csv('affiliations_neurips_2020.csv')
     print(df_affiliations)
