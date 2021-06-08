@@ -17,7 +17,7 @@ def is_li_article(li):
     return length_correct and abs_in_ref
 
 def get_neurips_papers(year):
-    response = requests.get(PROCEEDINGS['neurips'][2020])
+    response = requests.get(PROCEEDINGS['neurips'][year])
     soup = BeautifulSoup(response.content)
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
@@ -35,3 +35,27 @@ def get_neurips_papers(year):
         with open('tmp.pdf', 'wb') as f:
             f.write(pdf_response.content)
         yield article_title, article_link
+
+def get_neurips_papers_batched(year, batch_size=10, batch_id=0):
+    response = requests.get(PROCEEDINGS['neurips'][year])
+    soup = BeautifulSoup(response.content)
+    list_items = soup.find_all('li')
+    articles_items = [li for li in list_items if is_li_article(li)]
+    if batch_id*batch_size > len(articles_items) - 1:
+        raise ValueError('No more elements')
+    articles_items_batched = articles_items[batch_id*batch_size:(batch_id+1)*batch_size]
+    for i_art, article_item in enumerate(articles_items_batched):
+        article_title = article_item.contents[0].contents[0]
+        article_link = article_item.contents[0].attrs['href']
+        art_response = requests.get(PROCEEDINGS['neurips']['prefix'] + article_link)
+        soup_art = BeautifulSoup(art_response.content)
+        meta_art_page = soup_art.find_all('meta')
+        art_pdf_links = [m for m in meta_art_page if m.get('name') == 'citation_pdf_url']
+        if len(art_pdf_links) > 1:
+            raise ValueError()
+        article_link = art_pdf_links[0]['content']
+        pdf_response = requests.get(article_link)
+        pdf_filename = f'tmp_{i_art}.pdf'
+        with open(pdf_filename, 'wb') as f:
+            f.write(pdf_response.content)
+        yield article_title, article_link, pdf_filename
