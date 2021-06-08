@@ -20,7 +20,7 @@ def get_affiliations(pdf_path):
     institutions = [i.contents[0] for i in soup.find_all('institution')]
     return institutions
 
-def get_affiliations_async(pdf_path, session):
+async def get_affiliations_async(pdf_path, session):
     with open(pdf_path, 'rb') as f:
         data = f.read()
     resp = await session.post(
