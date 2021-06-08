@@ -23,13 +23,8 @@ def get_affiliations(pdf_path):
 async def get_affiliations_async(pdf_path, session):
     with open(pdf_path, 'rb') as f:
         data = f.read()
-    resp = await session.post(
-        CERMINE_URL,
-        data=data,
-        headers={'Content-Type': 'application/binary'},
-    )
-    resp.raise_for_status()
-    xml_pdf = await resp.text()
+    async with session.post(CERMINE_URL, data=data, headers={'Content-Type': 'application/binary'}) as resp:
+        xml_pdf = await resp.text()
     soup = BeautifulSoup(xml_pdf, 'lxml')
     institutions = [i.contents[0] for i in soup.find_all('institution')]
     return institutions
