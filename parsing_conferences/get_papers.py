@@ -28,13 +28,14 @@ def is_li_article(li):
     return length_correct and abs_in_ref
 
 def shorten_pdf(pdf_path, in_dir=False):
+    new_pdf_path = "tmp_short.pdf"
+    if in_dir:
+        new_pdf_path = Path('pdfs') / new_pdf_path
     try:
         inputpdf = PdfFileReader(open(pdf_path, "rb"))
         output = PdfFileWriter()
         output.addPage(inputpdf.getPage(0))
-        new_pdf_path = "tmp_short.pdf"
-        if in_dir:
-            new_pdf_path = Path('pdfs') / new_pdf_path
+
         with open(new_pdf_path, "wb") as outputStream:
             output.write(outputStream)
     except (PdfReadError, AssertionError):
