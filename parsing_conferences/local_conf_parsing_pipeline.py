@@ -1,3 +1,5 @@
+import argparse
+
 import pandas as pd
 from tqdm import tqdm
 
@@ -5,8 +7,15 @@ from parsing_conferences.get_affiliation import get_affiliations_local
 from parsing_conferences.get_papers import get_conf_papers
 
 if __name__ == '__main__':
-    year = 2020
-    conf = 'neurips'
+    parser = argparse.ArgumentParser(
+        description='Get all institutions from a conference')
+    parser.add_argument('--year', '-y', default=2020,
+                        help='Conferene year.')
+    parser.add_argument('--conf', '-c', default='neurips',
+                        help='name of the conference.')
+    args = parser.parse_args()
+    year = int(args.year)
+    conf = args.conf
     neurips_generator = get_conf_papers(conf, year, in_dir=True)
     n_samples = None
     counter = 0
