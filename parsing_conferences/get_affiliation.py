@@ -30,13 +30,17 @@ def get_affiliations_local(pdf_dir):
     )
     pdf_dir = Path(pdf_dir)
     xml_files = list(pdf_dir.glob('*.cermxml'))
-    xml_file = xml_files[0]
-    with open(xml_file, 'rb') as f:
-        xml_pdf = f.read()
-    soup = BeautifulSoup(xml_pdf, 'lxml')
-    institutions = [i.contents[0] for i in soup.find_all('institution')]
-    xml_file.unlink()
-    return institutions
+    try:
+        xml_file = xml_files[0]
+    except IndexError:
+        return []
+    else:
+        with open(xml_file, 'rb') as f:
+            xml_pdf = f.read()
+        soup = BeautifulSoup(xml_pdf, 'lxml')
+        institutions = [i.contents[0] for i in soup.find_all('institution')]
+        xml_file.unlink()
+        return institutions
 
 async def get_affiliations_async(pdf_resp, session):
     resp = await pdf_resp
