@@ -2,11 +2,12 @@ import pandas as pd
 from tqdm import tqdm
 
 from parsing_conferences.get_affiliation import get_affiliations_local
-from parsing_conferences.get_papers import get_neurips_papers
+from parsing_conferences.get_papers import get_conf_papers
 
 if __name__ == '__main__':
     year = 2020
-    neurips_generator = get_neurips_papers(year, in_dir=True)
+    conf = 'neurips'
+    neurips_generator = get_conf_papers(conf, year, in_dir=True)
     n_samples = None
     counter = 0
     try:
