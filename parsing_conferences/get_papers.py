@@ -1,7 +1,7 @@
 from pathlib import Path
-import time
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
+from PyPDF2.utils import PdfReadError
 import requests
 from bs4 import BeautifulSoup
 
@@ -21,16 +21,22 @@ def is_li_article(li):
     return length_correct and abs_in_ref
 
 def shorten_pdf(pdf_path, in_dir=False):
-    inputpdf = PdfFileReader(open(pdf_path, "rb"))
-    output = PdfFileWriter()
-    output.addPage(inputpdf.getPage(0))
-    new_pdf_path = "tmp_short.pdf"
-    if in_dir:
-        new_pdf_path = Path('pdfs') / new_pdf_path
-    with open(new_pdf_path, "wb") as outputStream:
-        output.write(outputStream)
-    Path(pdf_path).unlink()
-    return new_pdf_path
+    try:
+        inputpdf = PdfFileReader(open(pdf_path, "rb"), strict=False)
+        output = PdfFileWriter()
+        output.addPage(inputpdf.getPage(0))
+        new_pdf_path = "tmp_short.pdf"
+        if in_dir:
+            new_pdf_path = Path('pdfs') / new_pdf_path
+        with open(new_pdf_path, "wb") as outputStream:
+            output.write(outputStream)
+    except PdfReadError:
+        Path(new_pdf_path).unlink()
+        new_pdf_path = pdf_path
+    else:
+        Path(pdf_path).unlink()
+    finally:
+        return new_pdf_path
 
 def get_neurips_papers(year, in_dir=False):
     response = requests.get(PROCEEDINGS['neurips'][year])
