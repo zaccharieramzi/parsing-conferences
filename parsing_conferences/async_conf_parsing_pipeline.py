@@ -8,15 +8,12 @@ from aiohttp import ClientSession
 import pandas as pd
 
 from parsing_conferences.get_affiliation import get_affiliations_async
-from parsing_conferences.get_papers import get_neurips_papers_batched
+from parsing_conferences.get_papers import get_neurips_papers_batched, get_neurips_papers_batched_async
 
 OUT_FILE = 'async_affiliations_neurips_{year}.csv'
 
-async def write_affiliations(session, out_filename, neurips_art, art_link, pdf_path='tmp.pdf'):
-    start = time.time()
-    affiliations = await get_affiliations_async(pdf_path, session)
-    end = time.time()
-    print(pdf_path, end - start, start)
+async def write_affiliations(session, out_filename, neurips_art, art_link, pdf_resp=None):
+    affiliations = await get_affiliations_async(pdf_resp, session)
     outfile_exists = Path(out_filename).is_file()
     with open(out_filename, 'a') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=[
@@ -33,13 +30,12 @@ async def write_affiliations(session, out_filename, neurips_art, art_link, pdf_p
                 'paper_title': neurips_art,
             }
             writer.writerow(affiliation_data)
-    Path(pdf_path).unlink()
 
 async def bulk_get_affil_and_write(df_affiliations, batch_id=0, batch_size=10, year=2020):
-    neurips_generator = get_neurips_papers_batched(year, batch_size, batch_id)
     async with ClientSession(raise_for_status=True, timeout=aiohttp.ClientTimeout(batch_size*50)) as session:
+        neurips_generator = get_neurips_papers_batched_async(session, year, batch_size, batch_id)
         tasks = []
-        for neurips_art, art_link, pdf_name in neurips_generator:
+        async for neurips_art, art_link, pdf_response in neurips_generator:
             if df_affiliations is not None and art_link in df_affiliations['article_link'].unique():
                 continue
             tasks.append(
@@ -48,7 +44,7 @@ async def bulk_get_affil_and_write(df_affiliations, batch_id=0, batch_size=10, y
                     neurips_art=neurips_art,
                     art_link=art_link,
                     session=session,
-                    pdf_path=pdf_name,
+                    pdf_resp=pdf_response,
                 )
             )
         await asyncio.gather(*tasks)
@@ -60,9 +56,9 @@ if __name__ == '__main__':
         df_affiliations = pd.read_csv(OUT_FILE.format(year=year), index_col=0)
     except FileNotFoundError:
         df_affiliations = None
-    batch_size = 10
+    batch_size = 5
     batch_id = 0
-    max_batch = 1
+    max_batch = 2
     while batch_id < max_batch:
         try:
             asyncio.run(bulk_get_affil_and_write(df_affiliations, batch_id, batch_size, year))

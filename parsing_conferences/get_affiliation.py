@@ -20,10 +20,13 @@ def get_affiliations(pdf_path):
     institutions = [i.contents[0] for i in soup.find_all('institution')]
     return institutions
 
-async def get_affiliations_async(pdf_path, session):
-    with open(pdf_path, 'rb') as f:
-        data = f.read()
-    async with session.post(CERMINE_URL, data=data, headers={'Content-Type': 'application/binary'}) as resp:
+async def get_affiliations_async(pdf_resp, session):
+    resp = await pdf_resp
+    headers = {
+        'Content-Type': 'application/binary',
+        'Content-Length': str(resp.content_length),
+    }
+    async with session.post(CERMINE_URL, data=resp.content, headers=headers) as resp:
         xml_pdf = await resp.text()
     soup = BeautifulSoup(xml_pdf, 'lxml')
     institutions = [i.contents[0] for i in soup.find_all('institution')]

@@ -60,9 +60,9 @@ def get_neurips_papers_batched(year, batch_size=10, batch_id=0):
             f.write(pdf_response.content)
         yield article_title, article_link, pdf_filename
 
-def get_neurips_papers_batched_async(session, year=2020, batch_size=10, batch_id=0):
-    response = await session.get(PROCEEDINGS['neurips'][year])
-    soup = BeautifulSoup(response.content)
+async def get_neurips_papers_batched_async(session, year=2020, batch_size=10, batch_id=0):
+    async with session.get(PROCEEDINGS['neurips'][year]) as response:
+        soup = BeautifulSoup(await response.text())
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
     if batch_id*batch_size > len(articles_items) - 1:
