@@ -16,13 +16,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     year = int(args.year)
     conf = args.conf
-    neurips_generator = get_conf_papers(conf, year, in_dir=True)
     n_samples = None
     counter = 0
     try:
         df_affiliations = pd.read_csv(f'local_affiliations_neurips_{year}.csv', index_col=0)
+        start = len(df_affiliations['article_link'].unique())
     except FileNotFoundError:
         df_affiliations = None
+        start = 0
+    neurips_generator = get_conf_papers(conf, year, in_dir=True, start=start)
     for neurips_art, art_link in tqdm(neurips_generator):
         if df_affiliations is not None and art_link in df_affiliations['article_link'].unique():
             continue
