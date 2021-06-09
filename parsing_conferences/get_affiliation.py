@@ -1,11 +1,13 @@
-import time
 from pathlib import Path
+import subprocess
+import time
 
 import requests
 from bs4 import BeautifulSoup
 
 
 CERMINE_URL = 'http://cermine.ceon.pl/extract.do'
+CERMINE_JAR_FILE = 'cermine-impl-1.13-jar-with-dependencies.jar'
 
 def get_affiliations(pdf_path):
     with open(pdf_path, 'rb') as f:
@@ -16,6 +18,17 @@ def get_affiliations(pdf_path):
         data=data,
     )
     xml_pdf = response.content
+    soup = BeautifulSoup(xml_pdf, 'lxml')
+    institutions = [i.contents[0] for i in soup.find_all('institution')]
+    return institutions
+
+def get_affiliations_local(pdf_dir):
+    subprocess.call(['java', '-cp', CERMINE_JAR_FILE, '-path', pdf_dir, '-outputs', 'jats'])
+    pdf_dir = Path(pdf_dir)
+    xml_files = list(pdf_dir.glob('*.cermxml'))
+    xml_file = xml_files[0]
+    with open(xml_file, 'rb') as f:
+        xml_pdf = f.read()
     soup = BeautifulSoup(xml_pdf, 'lxml')
     institutions = [i.contents[0] for i in soup.find_all('institution')]
     return institutions
@@ -33,12 +46,5 @@ async def get_affiliations_async(pdf_resp, session):
     return institutions
 
 if __name__ == '__main__':
-    mendeley_path = Path('../mendeley_papers')
-    papers = mendeley_path.glob('NeurIPS-2020*.pdf')
-    n_samples = 10
-    for paper in list(papers)[:10]:
-        start = time.time()
-        print(paper.stem, get_affiliations(paper))
-        end = time.time()
-        print(f'Took {end - start} seconds')
-        print('='*20)
+    institutions = get_affiliations_local('pdfs')
+    print(institutions)
