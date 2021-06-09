@@ -53,10 +53,10 @@ def get_conf_papers(conf, *args, **kwargs):
     else:
         raise NotImplementedError(f'Conf {conf} is not implemented yet')
 
-def get_icml_papers(year, in_dir=False):
+def get_icml_papers(year, in_dir=False, start=0):
     response = requests.get(PROCEEDINGS['icml'][year])
     soup = BeautifulSoup(response.content, BS_PARSER)
-    links_items = soup.find_all('p', {'class': 'links'})
+    links_items = soup.find_all('p', {'class': 'links'})[start:]
     for link_item in links_items:
         article_link = link_item.find_all('a')[1].attrs['href']
         article_title = None
@@ -69,11 +69,11 @@ def get_icml_papers(year, in_dir=False):
         new_pdf_name = shorten_pdf(pdf_name, in_dir=in_dir)
         yield article_title, article_link
 
-def get_neurips_papers(year, in_dir=False):
+def get_neurips_papers(year, in_dir=False, start=0):
     response = requests.get(PROCEEDINGS['neurips'][year])
     soup = BeautifulSoup(response.content, BS_PARSER)
     list_items = soup.find_all('li')
-    articles_items = [li for li in list_items if is_li_article(li)]
+    articles_items = [li for li in list_items if is_li_article(li)][start:]
     for article_item in articles_items:
         article_title = article_item.contents[0].contents[0]
         article_link = article_item.contents[0].attrs['href']
