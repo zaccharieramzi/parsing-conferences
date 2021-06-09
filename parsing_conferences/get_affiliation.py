@@ -24,7 +24,10 @@ def get_affiliations(pdf_path):
     return institutions
 
 def get_affiliations_local(pdf_dir):
-    subprocess.run(['java', '-cp', CERMINE_JAR_FILE, CERMINE_OPTION, '-path', pdf_dir, '-outputs', 'jats'])
+    subprocess.call(
+        ['java', '-cp', CERMINE_JAR_FILE, CERMINE_OPTION, '-path', pdf_dir, '-outputs', 'jats'],
+        stdout=subprocess.PIPE,
+    )
     pdf_dir = Path(pdf_dir)
     xml_files = list(pdf_dir.glob('*.cermxml'))
     xml_file = xml_files[0]
@@ -32,7 +35,6 @@ def get_affiliations_local(pdf_dir):
         xml_pdf = f.read()
     soup = BeautifulSoup(xml_pdf, 'lxml')
     institutions = [i.contents[0] for i in soup.find_all('institution')]
-    print(institutions)
     xml_file.unlink()
     return institutions
 
