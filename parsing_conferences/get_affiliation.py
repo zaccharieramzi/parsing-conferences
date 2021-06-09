@@ -38,7 +38,7 @@ def get_affiliations_local(pdf_dir):
         with open(xml_file, 'rb') as f:
             xml_pdf = f.read()
         soup = BeautifulSoup(xml_pdf, 'lxml')
-        institutions = [i.contents[0] for i in soup.find_all('institution')]
+        institutions = [i.contents[0] for i in soup.find_all('institution') if i.contents]
         xml_file.unlink()
         return institutions
 
