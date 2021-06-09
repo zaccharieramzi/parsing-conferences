@@ -16,7 +16,7 @@ def is_li_article(li):
         abs_in_ref = False
     return length_correct and abs_in_ref
 
-def get_neurips_papers(year):
+def get_neurips_papers(year, in_dir=False):
     response = requests.get(PROCEEDINGS['neurips'][year])
     soup = BeautifulSoup(response.content)
     list_items = soup.find_all('li')
@@ -32,7 +32,10 @@ def get_neurips_papers(year):
             raise ValueError()
         article_link = art_pdf_links[0]['content']
         pdf_response = requests.get(article_link)
-        with open('tmp.pdf', 'wb') as f:
+        pdf_name = 'tmp.pdf'
+        if in_dir:
+            pdf_name = Path('pdfs') / pdf_name
+        with open(pdf_name, 'wb') as f:
             f.write(pdf_response.content)
         yield article_title, article_link
 
