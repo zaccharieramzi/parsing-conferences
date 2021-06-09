@@ -22,7 +22,7 @@ def is_li_article(li):
 
 def shorten_pdf(pdf_path, in_dir=False):
     try:
-        inputpdf = PdfFileReader(open(pdf_path, "rb"), strict=False)
+        inputpdf = PdfFileReader(open(pdf_path, "rb"))
         output = PdfFileWriter()
         output.addPage(inputpdf.getPage(0))
         new_pdf_path = "tmp_short.pdf"
