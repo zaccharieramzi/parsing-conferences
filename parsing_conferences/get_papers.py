@@ -37,7 +37,7 @@ def shorten_pdf(pdf_path, in_dir=False):
             new_pdf_path = Path('pdfs') / new_pdf_path
         with open(new_pdf_path, "wb") as outputStream:
             output.write(outputStream)
-    except PdfReadError:
+    except (PdfReadError, AssertionError):
         Path(new_pdf_path).unlink()
         new_pdf_path = pdf_path
     else:
