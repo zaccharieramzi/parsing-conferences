@@ -32,14 +32,14 @@ def shorten_pdf(pdf_path, in_dir=False):
 
 def get_neurips_papers(year, in_dir=False):
     response = requests.get(PROCEEDINGS['neurips'][year])
-    soup = BeautifulSoup(response.content)
+    soup = BeautifulSoup(response.content, 'html_parser')
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
     for article_item in articles_items:
         article_title = article_item.contents[0].contents[0]
         article_link = article_item.contents[0].attrs['href']
         art_response = requests.get(PROCEEDINGS['neurips']['prefix'] + article_link)
-        soup_art = BeautifulSoup(art_response.content)
+        soup_art = BeautifulSoup(art_response.content, 'html_parser')
         meta_art_page = soup_art.find_all('meta')
         art_pdf_links = [m for m in meta_art_page if m.get('name') == 'citation_pdf_url']
         if len(art_pdf_links) > 1:
@@ -56,7 +56,7 @@ def get_neurips_papers(year, in_dir=False):
 
 def get_neurips_papers_batched(year, batch_size=10, batch_id=0):
     response = requests.get(PROCEEDINGS['neurips'][year])
-    soup = BeautifulSoup(response.content)
+    soup = BeautifulSoup(response.content, 'html_parser')
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
     if batch_id*batch_size > len(articles_items) - 1:
@@ -66,7 +66,7 @@ def get_neurips_papers_batched(year, batch_size=10, batch_id=0):
         article_title = article_item.contents[0].contents[0]
         article_link = article_item.contents[0].attrs['href']
         art_response = requests.get(PROCEEDINGS['neurips']['prefix'] + article_link)
-        soup_art = BeautifulSoup(art_response.content)
+        soup_art = BeautifulSoup(art_response.content, 'html_parser')
         meta_art_page = soup_art.find_all('meta')
         art_pdf_links = [m for m in meta_art_page if m.get('name') == 'citation_pdf_url']
         if len(art_pdf_links) > 1:
@@ -80,7 +80,7 @@ def get_neurips_papers_batched(year, batch_size=10, batch_id=0):
 
 async def get_neurips_papers_batched_async(session, year=2020, batch_size=10, batch_id=0):
     async with session.get(PROCEEDINGS['neurips'][year]) as response:
-        soup = BeautifulSoup(await response.text())
+        soup = BeautifulSoup(await response.text(), 'html_parser')
     list_items = soup.find_all('li')
     articles_items = [li for li in list_items if is_li_article(li)]
     if batch_id*batch_size > len(articles_items) - 1:
@@ -90,7 +90,7 @@ async def get_neurips_papers_batched_async(session, year=2020, batch_size=10, ba
         article_title = article_item.contents[0].contents[0]
         article_link = article_item.contents[0].attrs['href']
         art_response = requests.get(PROCEEDINGS['neurips']['prefix'] + article_link)
-        soup_art = BeautifulSoup(art_response.content)
+        soup_art = BeautifulSoup(art_response.content, 'html_parser')
         meta_art_page = soup_art.find_all('meta')
         art_pdf_links = [m for m in meta_art_page if m.get('name') == 'citation_pdf_url']
         if len(art_pdf_links) > 1:
