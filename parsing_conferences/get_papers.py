@@ -11,6 +11,9 @@ PROCEEDINGS = {
         2020: 'https://papers.nips.cc/paper/2020',
         2019: 'https://papers.nips.cc/paper/2019',
         'prefix': 'https://papers.nips.cc/',
+    },
+    'icml': {
+        2020: 'http://proceedings.mlr.press/v119/',
     }
 }
 
@@ -41,6 +44,30 @@ def shorten_pdf(pdf_path, in_dir=False):
         Path(pdf_path).unlink()
     finally:
         return new_pdf_path
+
+def get_conf_papers(conf, *args, **kwargs):
+    if conf == 'neurips':
+        return get_neurips_papers(*args, **kwargs)
+    elif conf == 'icml':
+        return get_icml_papers(*args, **kwargs)
+    else:
+        raise NotImplementedError(f'Conf {conf} is not implemented yet')
+
+def get_icml_papers(year, in_dir=False):
+    response = requests.get(PROCEEDINGS['icml'][year])
+    soup = BeautifulSoup(response.content, BS_PARSER)
+    links_items = soup.find_all('p', {'class': 'links'})
+    for link_item in links_items:
+        article_link = link_item.find_all('a')[1].attrs['href']
+        article_title = None
+        pdf_response = requests.get(article_link)
+        pdf_name = 'tmp.pdf'
+        if in_dir:
+            pdf_name = Path('pdfs') / pdf_name
+        with open(pdf_name, 'wb') as f:
+            f.write(pdf_response.content)
+        new_pdf_name = shorten_pdf(pdf_name, in_dir=in_dir)
+        yield article_title, article_link
 
 def get_neurips_papers(year, in_dir=False):
     response = requests.get(PROCEEDINGS['neurips'][year])
