@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 
 
 PROCEEDINGS = {
-    'neurips': {2020: 'https://papers.nips.cc/paper/2020', 'prefix': 'https://papers.nips.cc/'}
+    'neurips': {
+        2020: 'https://papers.nips.cc/paper/2020',
+        2019: 'https://papers.nips.cc/paper/2019',
+        'prefix': 'https://papers.nips.cc/',
+    }
 }
 
 BS_PARSER = 'html.parser'
