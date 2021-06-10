@@ -35,7 +35,6 @@ def shorten_pdf(pdf_path, in_dir=False):
         inputpdf = PdfFileReader(open(pdf_path, "rb"))
         output = PdfFileWriter()
         output.addPage(inputpdf.getPage(0))
-
         with open(new_pdf_path, "wb") as outputStream:
             output.write(outputStream)
     except (PdfReadError, AssertionError):
